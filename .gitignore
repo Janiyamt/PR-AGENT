@@ -3,4 +3,4 @@ __pycache__/
 pr_report.docx
 venv/
 .venv/
-config
+config.py
