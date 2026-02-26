@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+pr_report.docx
+venv/
+.venv/
+config
