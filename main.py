@@ -62,7 +62,13 @@ def main():
     output_path = os.path.join(os.path.dirname(__file__), config.OUTPUT_FILE)
     doc_generator.generate(pr_data, analysis, repo, output_path)
 
-    print(f"\n Done! Open '{config.OUTPUT_FILE}' to see your report.")
+    pdf_path = output_path.replace(".docx", ".pdf")
+    print(f"\n🎉 Done! Generated both Word and PDF reports.")
+
+    # Open both files automatically
+    #os.startfile(output_path)                    # opens Word doc
+    if os.path.exists(pdf_path):
+        os.startfile(pdf_path)                   # opens PDF
 
 
 if __name__ == "__main__":

@@ -102,8 +102,43 @@ def fetch_pr_details(repo, pr_number, token=None):
 
     return pr_detail, files, reviews
 
-
-def extract_pr_info(pr_detail, files, reviews):
+def fetch_linked_issues(repo, pr_body, pr_number, token=None):
+    """
+    Extract and fetch issues linked to a PR.
+    
+    In GitHub, developers link issues by writing in the PR description:
+    "Fixes #42", "Closes #123", "Resolves #7"
+    We find these using regex, then fetch each issue's details.
+    """
+    import re
+    
+    # Regex pattern to find issue references like "Fixes #42", "Closes #123"
+    # re.findall returns all matches in the text
+    pattern = r'(?:fixes|closes|resolves|fix|close|resolve)\s+#(\d+)'
+    issue_numbers = re.findall(pattern, (pr_body or "").lower())
+    
+    if not issue_numbers:
+        return []
+    
+    issues = []
+    for issue_num in issue_numbers:
+        url = f"https://api.github.com/repos/{repo}/issues/{issue_num}"
+        resp = requests.get(url, headers=_get_headers(token))
+        if resp.status_code == 200:
+            issue = resp.json()
+            issues.append({
+                "number": issue.get("number"),
+                "title": issue.get("title"),
+                "state": issue.get("state"),        # "open" or "closed"
+                "author": issue.get("user", {}).get("login", "Unknown"),
+                "created_at": issue.get("created_at", "")[:10],
+                "closed_at": issue.get("closed_at", "")[:10] if issue.get("closed_at") else "Not closed",
+                "labels": [l.get("name") for l in issue.get("labels", [])],
+                "body": (issue.get("body") or "No description")[:300],
+                "url": issue.get("html_url", "")
+            })
+    return issues
+def extract_pr_info(pr_detail, files, reviews,issues=None):
     """
     Transform raw GitHub API data into a clean, flat dict.
 
@@ -132,10 +167,13 @@ def extract_pr_info(pr_detail, files, reviews):
         "merged_at": pr_detail.get("merged_at", "")[:10] if pr_detail.get("merged_at") else "Not merged",
         "merged_by": pr_detail.get("merged_by", {}).get("login", "") if pr_detail.get("merged_by") else "",
         "body": (pr_detail.get("body") or "No description")[:500],
+        "head_branch": pr_detail.get("head", {}).get("ref", "N/A"),  # source branch (where changes were made)
+        "base_branch": pr_detail.get("base", {}).get("ref", "N/A"),  # target branch (where it merges into)
         "labels": [l.get("name") for l in pr_detail.get("labels", [])],
         "files_changed": [f.get("filename") for f in files[:10]],
         "additions": sum(f.get("additions", 0) for f in files),
         "deletions": sum(f.get("deletions", 0) for f in files),
+        "linked_issues": issues or [],
         "file_diffs": [
     {
         "filename": f.get("filename"),
@@ -176,6 +214,7 @@ def get_all_pr_data(repo, state="closed", max_count=5, token=None, author=None):
         pr_number = pr["number"]
         print(f"  → PR #{pr_number}: {pr['title'][:60]}...")
         detail, files, reviews = fetch_pr_details(repo, pr_number, token=token)
-        result.append(extract_pr_info(detail, files, reviews))
+        issues = fetch_linked_issues(repo, detail.get("body", ""), pr_number, token=token)
+        result.append(extract_pr_info(detail, files, reviews, issues))
 
     return result

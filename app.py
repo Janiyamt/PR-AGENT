@@ -6,8 +6,7 @@
 # HOW STREAMLIT WORKS:
 # - Every time the user interacts (clicks button, types), the whole script re-runs
 # - st.session_state is a dict that persists between re-runs — we use it to
-#   store fetched PR data and chat history so they don't disappear on re-run
-
+#   store fetched PR data and chat history so they don't disappear on re-run'''
 import streamlit as st
 import config
 import github_client
