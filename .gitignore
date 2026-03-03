@@ -4,4 +4,4 @@ pr_report.docx
 venv/
 .venv/
 config.py
-#tHIS IS THE SECOND COMMENT MADE TO EXPLAIN AND UNDERSTAND THE BOT AS THE 1ST ONE FAILED
+# this is the last comment to check the bot with all oci services
