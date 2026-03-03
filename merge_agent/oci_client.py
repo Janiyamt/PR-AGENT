@@ -42,29 +42,39 @@ def analyze_merge_event(metadata: dict) -> dict:
 
 # ── Private helpers ────────────────────────────────────────────────────────
 
+# merge_agent/oci_client.py
+# replace the _build_client() function with this:
+
 def _build_client():
-    """
-    Build an OCI Gen AI client using environment variables.
-    In Actions the private key is passed as the full PEM content in a secret.
-    """
     import oci
     from oci.generative_ai_inference import GenerativeAiInferenceClient
+    import sys
+    import os
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    import config
 
     key_content = os.environ.get("OCI_KEY_CONTENT", "").strip()
-    if not key_content:
-        raise EnvironmentError("OCI_KEY_CONTENT env var is missing or empty.")
 
-    oci_config = {
-        "user":        os.environ["OCI_USER"],
-        "fingerprint": os.environ["OCI_FINGERPRINT"],
-        "tenancy":     os.environ["OCI_TENANCY"],
-        "region":      os.environ["OCI_REGION"],
-        "key_content": key_content,   # full PEM string — no file needed
-    }
+    if key_content:
+        # Running in GitHub Actions — build config from env vars
+        oci_config = {
+            "user":        os.environ["OCI_USER"],
+            "fingerprint": os.environ["OCI_FINGERPRINT"],
+            "tenancy":     os.environ["OCI_TENANCY"],
+            "region":      os.environ["OCI_REGION"],
+            "key_content": key_content,
+        }
+    else:
+        # Running locally — use ~/.oci/config file (same as V1)
+        oci_config = oci.config.from_file(
+            file_location=config.OCI_CONFIG_FILE,
+            profile_name=config.OCI_CONFIG_PROFILE
+        )
+
     oci.config.validate_config(oci_config)
     return GenerativeAiInferenceClient(
         config=oci_config,
-        service_endpoint=os.environ.get("OCI_ENDPOINT", "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com"),
+        service_endpoint=config.OCI_ENDPOINT
     )
 
 
@@ -116,19 +126,27 @@ Respond ONLY with valid JSON — no markdown fences, no preamble:
 
 
 def _call_api(client, prompt: str) -> str:
-    """Send the prompt and return the raw text response."""
     from oci.generative_ai_inference.models import (
         ChatDetails, GenericChatRequest,
         UserMessage, TextContent, OnDemandServingMode,
     )
+    import sys
+    import os
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    import config
+
+    # Use env var if set, otherwise fall back to config.py
+    model_id       = os.environ.get("OCI_MODEL_ID")       or config.OCI_MODEL_ID
+    compartment_id = os.environ.get("OCI_COMPARTMENT_ID") or config.OCI_COMPARTMENT_ID
+    endpoint       = os.environ.get("OCI_ENDPOINT")       or config.OCI_ENDPOINT
 
     message      = UserMessage(content=[TextContent(text=prompt)])
-    serving_mode = OnDemandServingMode(model_id=os.environ.get("OCI_MODEL_ID", ""))
+    serving_mode = OnDemandServingMode(model_id=model_id)
     chat_request = GenericChatRequest(
         messages=[message], max_tokens=800, temperature=0.3, is_stream=False
     )
     chat_details = ChatDetails(
-        compartment_id=os.environ.get("OCI_COMPARTMENT_ID", ""),
+        compartment_id=compartment_id,
         serving_mode=serving_mode,
         chat_request=chat_request,
     )
