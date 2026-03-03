@@ -1,0 +1,63 @@
+{
+  "last_updated": "2026-03-03T10:34:32Z",
+  "total_events": 1,
+  "events": [
+    {
+      "schema_version": "2.0",
+      "logged_at": "2026-03-03T10:34:32Z",
+      "repo": "Janiyamt/PR-AGENT",
+      "merge_commit_sha": "7767cf89b3c149f77ef8f2da030011463d1c1670",
+      "merged_at": "2026-03-03 10:34:04",
+      "merged_by": "likiita",
+      "pr_number": 2,
+      "pr_title": "Add comment to check v2 bot functionality",
+      "pr_author": "likiita",
+      "pr_body": "Added a comment to test the v2 bot functionality.",
+      "pr_url": "https://github.com/Janiyamt/PR-AGENT/pull/2",
+      "source_branch": "bot_test",
+      "target_branch": "master",
+      "labels": [],
+      "created_at": "2026-03-03",
+      "additions": 3,
+      "deletions": 2,
+      "files_changed": [
+        ".github/workflows/merge_agent.yml",
+        "app.py"
+      ],
+      "file_diffs": [
+        {
+          "filename": ".github/workflows/merge_agent.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "patch": "@@ -8,7 +8,7 @@ name: PR Merge Agent\n on:\n   push:\n     branches:\n-      - main   # fires on every push to main, including PR merges\n+      - master   # fires on every push to main, including PR merges\n \n jobs:\n   merge-agent:"
+        },
+        {
+          "filename": "app.py",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1,
+          "patch": "@@ -13,6 +13,7 @@\n import oci_client\n \n # ── Page config — must be the very first Streamlit call ──\n+# This comment is added to check if the v2 bot is working\n st.set_page_config(\n     page_title=\"PR Agent\",\n     page_icon=\"🤖\",\n@@ -312,4 +313,4 @@ def answer_question(question, pr_data, analysis):\n else:\n     # Nothing fetched yet — show instructions\n     st.info(\"👈Enter a GitHub repo in the sidebar and click **Generate Report** to get started.\")\n-   \n\\ No newline at end of file\n+   "
+        }
+      ],
+      "commit_count": 2,
+      "commit_messages": [
+        "Add comment to check v2 bot functionality",
+        "Change trigger branch from 'main' to 'master'"
+      ],
+      "approvals": [],
+      "changes_requested_by": [],
+      "comments": 0,
+      "review_comments": 0,
+      "linked_issues": [],
+      "ai_analysis": {
+        "pr_summary": "Added a comment to test the v2 bot functionality.",
+        "key_impacts": [
+          "Changed 2 file(s)"
+        ],
+        "review_notes": "Approved by: No approvals recorded.",
+        "before_after": "AI analysis unavailable — check OCI credentials in GitHub Secrets."
+      }
+    }
+  ]
+}
