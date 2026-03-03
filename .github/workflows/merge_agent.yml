@@ -8,7 +8,7 @@ name: PR Merge Agent
 on:
   push:
     branches:
-      - main   # fires on every push to main, including PR merges
+      - master   # fires on every push to main, including PR merges
 
 jobs:
   merge-agent:
