@@ -13,6 +13,7 @@ import github_client
 import oci_client
 
 # ── Page config — must be the very first Streamlit call ──
+# This comment is added to check if the v2 bot is working
 st.set_page_config(
     page_title="PR Agent",
     page_icon="🤖",
