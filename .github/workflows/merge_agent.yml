@@ -1,0 +1,75 @@
+# .github/workflows/merge-agent.yml
+# ====================================
+# Triggers whenever a commit is pushed to main (which includes PR merges).
+# Runs the PR-Agent v2 pipeline: detect merge → fetch metadata → store document.
+
+name: PR Merge Agent
+
+on:
+  push:
+    branches:
+      - main   # fires on every push to main, including PR merges
+
+jobs:
+  merge-agent:
+    name: Run Merge Agent
+    runs-on: ubuntu-latest
+
+    # ── Permissions ─────────────────────────────────────────────────────────
+    # contents:write  → needed to commit merge-log.json back to the repo
+    # pull-requests:read → needed to look up which PR caused this push
+    permissions:
+      contents: write
+      pull-requests: read
+
+    steps:
+
+      # 1. Checkout the repo so we can read/write merge-log.json
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history so we can inspect merge commits
+
+      # 2. Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: pip install requests python-docx
+
+      # 4. Run the merge agent
+      #    All GitHub context is passed as environment variables.
+      #    OCI credentials are stored as GitHub Secrets (never hardcoded).
+      - name: Run merge agent
+        env:
+          # GitHub context — injected automatically by Actions
+          GITHUB_TOKEN:          ${{ secrets.GITHUB_TOKEN }}
+          MERGE_COMMIT_SHA:      ${{ github.sha }}
+          REPO_FULL_NAME:        ${{ github.repository }}
+          PUSHED_BY:             ${{ github.actor }}
+          REF:                   ${{ github.ref }}
+
+          # OCI credentials — add these in repo Settings → Secrets → Actions
+          OCI_USER:              ${{ secrets.OCI_USER }}
+          OCI_FINGERPRINT:       ${{ secrets.OCI_FINGERPRINT }}
+          OCI_TENANCY:           ${{ secrets.OCI_TENANCY }}
+          OCI_REGION:            ${{ secrets.OCI_REGION }}
+          OCI_KEY_CONTENT:       ${{ secrets.OCI_KEY_CONTENT }}
+          OCI_COMPARTMENT_ID:    ${{ secrets.OCI_COMPARTMENT_ID }}
+          OCI_MODEL_ID:          ${{ secrets.OCI_MODEL_ID }}
+          OCI_ENDPOINT:          ${{ secrets.OCI_ENDPOINT }}
+
+        run: python merge_agent/main.py
+
+      # 5. Commit the updated merge-log.json and generated .docx back to the repo
+      - name: Commit merge log + document
+        run: |
+          git config user.name  "PR-Agent Bot"
+          git config user.email "pr-agent-bot@users.noreply.github.com"
+          git add merge_agent/logs/merge-log.json
+          git add merge_agent/logs/*.docx || true   # ignore if no docx this run
+          git diff --cached --quiet || git commit -m "chore: log merge event for ${{ github.sha }}"
+          git push
