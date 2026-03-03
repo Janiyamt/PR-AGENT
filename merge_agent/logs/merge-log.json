@@ -1,7 +1,55 @@
 {
-  "last_updated": "2026-03-03T11:02:13Z",
-  "total_events": 2,
+  "last_updated": "2026-03-03T11:21:59Z",
+  "total_events": 3,
   "events": [
+    {
+      "schema_version": "2.0",
+      "logged_at": "2026-03-03T11:02:13Z",
+      "repo": "Janiyamt/PR-AGENT",
+      "merge_commit_sha": "7a801a4e47af316137118504759fdb8c167f08e6",
+      "merged_at": "2026-03-03 11:01:59",
+      "merged_by": "likiita",
+      "pr_number": 3,
+      "pr_title": "Update .gitignore",
+      "pr_author": "likiita",
+      "pr_body": "No description",
+      "pr_url": "https://github.com/Janiyamt/PR-AGENT/pull/3",
+      "source_branch": "bot_test",
+      "target_branch": "master",
+      "labels": [],
+      "created_at": "2026-03-03",
+      "additions": 2,
+      "deletions": 1,
+      "files_changed": [
+        ".gitignore"
+      ],
+      "file_diffs": [
+        {
+          "filename": ".gitignore",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1,
+          "patch": "@@ -3,4 +3,5 @@ __pycache__/\n pr_report.docx\n venv/\n .venv/\n-config.py\n\\ No newline at end of file\n+config.py\n+#tHIS IS THE SECOND COMMENT MADE TO EXPLAIN AND UNDERSTAND THE BOT AS THE 1ST ONE FAILED"
+        }
+      ],
+      "commit_count": 1,
+      "commit_messages": [
+        "Update .gitignore"
+      ],
+      "approvals": [],
+      "changes_requested_by": [],
+      "comments": 0,
+      "review_comments": 0,
+      "linked_issues": [],
+      "ai_analysis": {
+        "pr_summary": "No description",
+        "key_impacts": [
+          "Changed 1 file(s)"
+        ],
+        "review_notes": "Approved by: No approvals recorded.",
+        "before_after": "AI analysis unavailable — check OCI credentials in GitHub Secrets."
+      }
+    },
     {
       "schema_version": "2.0",
       "logged_at": "2026-03-03T10:34:32Z",
@@ -61,21 +109,21 @@
     },
     {
       "schema_version": "2.0",
-      "logged_at": "2026-03-03T11:02:13Z",
+      "logged_at": "2026-03-03T11:21:59Z",
       "repo": "Janiyamt/PR-AGENT",
-      "merge_commit_sha": "7a801a4e47af316137118504759fdb8c167f08e6",
-      "merged_at": "2026-03-03 11:01:59",
+      "merge_commit_sha": "71f19dca2b81e600715870760d260bde6c012a94",
+      "merged_at": "2026-03-03 11:21:44",
       "merged_by": "likiita",
-      "pr_number": 3,
+      "pr_number": 4,
       "pr_title": "Update .gitignore",
       "pr_author": "likiita",
       "pr_body": "No description",
-      "pr_url": "https://github.com/Janiyamt/PR-AGENT/pull/3",
+      "pr_url": "https://github.com/Janiyamt/PR-AGENT/pull/4",
       "source_branch": "bot_test",
       "target_branch": "master",
       "labels": [],
       "created_at": "2026-03-03",
-      "additions": 2,
+      "additions": 1,
       "deletions": 1,
       "files_changed": [
         ".gitignore"
@@ -84,9 +132,9 @@
         {
           "filename": ".gitignore",
           "status": "modified",
-          "additions": 2,
+          "additions": 1,
           "deletions": 1,
-          "patch": "@@ -3,4 +3,5 @@ __pycache__/\n pr_report.docx\n venv/\n .venv/\n-config.py\n\\ No newline at end of file\n+config.py\n+#tHIS IS THE SECOND COMMENT MADE TO EXPLAIN AND UNDERSTAND THE BOT AS THE 1ST ONE FAILED"
+          "patch": "@@ -4,4 +4,4 @@ pr_report.docx\n venv/\n .venv/\n config.py\n-#tHIS IS THE SECOND COMMENT MADE TO EXPLAIN AND UNDERSTAND THE BOT AS THE 1ST ONE FAILED\n+# this is the last comment to check the bot with all oci services"
         }
       ],
       "commit_count": 1,
