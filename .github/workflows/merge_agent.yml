@@ -62,7 +62,7 @@ jobs:
           OCI_MODEL_ID:          ${{ secrets.OCI_MODEL_ID }}
           OCI_ENDPOINT:          ${{ secrets.OCI_ENDPOINT }}
 
-        run: python merge_agent/main.py
+        run: PYTHONPATH=$PYTHONPATH:$(pwd) python merge_agent/main.py
 
       # 5. Commit the updated merge-log.json and generated .docx back to the repo
       - name: Commit merge log + document
