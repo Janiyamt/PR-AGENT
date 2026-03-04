@@ -17,9 +17,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repo code
+      # Step 1: Check out the repo code — explicitly on master branch
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          ref: master
+          fetch-depth: 0
 
       # Step 2: Set up Python
       - name: Set up Python
@@ -40,9 +43,9 @@ jobs:
           echo "fingerprint=${{ secrets.OCI_FINGERPRINT }}" >> ~/.oci/config
           echo "tenancy=${{ secrets.OCI_TENANCY }}" >> ~/.oci/config
           echo "region=${{ secrets.OCI_REGION }}" >> ~/.oci/config
-          echo "key_file=~/.oci/oci_api_key.pem" >> ~/.oci/config
-          echo "${{ secrets.OCI_KEY_CONTENT }}" > ~/.oci/oci_api_key.pem
-          chmod 600 ~/.oci/oci_api_key.pem
+          echo "key_file=/root/.oci/oci_api_key.pem" >> ~/.oci/config
+          echo "${{ secrets.OCI_KEY_CONTENT }}" > /root/.oci/oci_api_key.pem
+          chmod 600 /root/.oci/oci_api_key.pem
 
       # Step 5: Create config.py from GitHub Secrets
       - name: Create config.py
@@ -81,11 +84,11 @@ jobs:
           print("Done!")
           EOF
 
+      # Step 7: Commit the report back to master
       - name: Commit report to repo
         run: |
           git config user.name  "PR Agent Bot"
           git config user.email "pr-agent@github-actions"
-          git checkout master
           git add -f pr_report.docx
           git diff --staged --quiet || git commit -m "📄 Auto-update PR report [$(date +'%Y-%m-%d %H:%M')]"
           git push origin master
