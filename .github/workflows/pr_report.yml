@@ -1,8 +1,4 @@
 # .github/workflows/pr_report.yml
-# =================================
-# Automatically runs whenever a PR is opened or closed.
-# Generates a Word report and commits it back to the repo.
-
 name: Generate PR Report
 
 on:
@@ -17,50 +13,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repo code — explicitly on master branch
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
           ref: master
           fetch-depth: 0
 
-      # Step 2: Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
 
-      # Step 3: Install dependencies
       - name: Install dependencies
         run: pip install requests oci python-docx
 
-      # Step 4: Create OCI config file from GitHub Secrets
-      - name: Create OCI config
-        run: |
-          mkdir -p ~/.oci
-          echo "[DEFAULT]" > ~/.oci/config
-          echo "user=${{ secrets.OCI_USER }}" >> ~/.oci/config
-          echo "fingerprint=${{ secrets.OCI_FINGERPRINT }}" >> ~/.oci/config
-          echo "tenancy=${{ secrets.OCI_TENANCY }}" >> ~/.oci/config
-          echo "region=${{ secrets.OCI_REGION }}" >> ~/.oci/config
-          echo "key_file=/root/.oci/oci_api_key.pem" >> ~/.oci/config
-          echo "${{ secrets.OCI_KEY_CONTENT }}" > /root/.oci/oci_api_key.pem
-          chmod 600 /root/.oci/oci_api_key.pem
-
-      # Step 5: Create config.py from GitHub Secrets
       - name: Create config.py
         run: |
           cat > config.py << 'EOF'
           OCI_COMPARTMENT_ID  = "${{ secrets.OCI_COMPARTMENT_ID }}"
           OCI_ENDPOINT        = "${{ secrets.OCI_ENDPOINT }}"
           OCI_MODEL_ID        = "${{ secrets.OCI_MODEL_ID }}"
-          OCI_CONFIG_FILE     = "/root/.oci/config"
-          OCI_CONFIG_PROFILE  = "DEFAULT"
           OUTPUT_FILE         = "pr_report.docx"
           EOF
 
-      # Step 6: Run the agent
       - name: Run PR Agent
+        env:
+          OCI_USER:         ${{ secrets.OCI_USER }}
+          OCI_FINGERPRINT:  ${{ secrets.OCI_FINGERPRINT }}
+          OCI_TENANCY:      ${{ secrets.OCI_TENANCY }}
+          OCI_REGION:       ${{ secrets.OCI_REGION }}
+          OCI_KEY_CONTENT:  ${{ secrets.OCI_KEY_CONTENT }}
         run: |
           python - << 'EOF'
           import github_client
@@ -84,7 +66,6 @@ jobs:
           print("Done!")
           EOF
 
-      # Step 7: Commit the report back to master
       - name: Commit report to repo
         run: |
           git config user.name  "PR Agent Bot"
