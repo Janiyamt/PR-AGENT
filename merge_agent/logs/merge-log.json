@@ -1,0 +1,258 @@
+{
+  "last_updated": "2026-03-04T06:06:29Z",
+  "total_events": 5,
+  "events": [
+    {
+      "schema_version": "2.0",
+      "logged_at": "2026-03-04T05:56:23Z",
+      "repo": "Janiyamt/PR-AGENT",
+      "merge_commit_sha": "7a4e90bf9ad6b9b7978fb89e1d6a3e4c55ad9661",
+      "merged_at": "2026-03-04 05:56:05",
+      "merged_by": "likiita",
+      "pr_number": 7,
+      "pr_title": "Update comment in .gitignore for clarity",
+      "pr_author": "likiita",
+      "pr_body": "No description",
+      "pr_url": "https://github.com/Janiyamt/PR-AGENT/pull/7",
+      "source_branch": "bot_test",
+      "target_branch": "master",
+      "labels": [],
+      "created_at": "2026-03-04",
+      "additions": 1,
+      "deletions": 1,
+      "files_changed": [
+        ".gitignore"
+      ],
+      "file_diffs": [
+        {
+          "filename": ".gitignore",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "patch": "@@ -4,4 +4,4 @@ pr_report.docx\n venv/\n .venv/\n config.py\n-# this is the last comment to check the bot with all oci services\n+# i hope everything works well with oci services"
+        }
+      ],
+      "commit_count": 1,
+      "commit_messages": [
+        "Update comment in .gitignore for clarity"
+      ],
+      "approvals": [],
+      "changes_requested_by": [],
+      "comments": 0,
+      "review_comments": 0,
+      "linked_issues": [],
+      "ai_analysis": {
+        "pr_summary": "No description",
+        "key_impacts": [
+          "Changed 1 file(s)"
+        ],
+        "review_notes": "Approved by: No approvals recorded.",
+        "before_after": "AI analysis unavailable - check OCI credentials in GitHub Secrets."
+      }
+    },
+    {
+      "schema_version": "2.0",
+      "logged_at": "2026-03-03T11:21:59Z",
+      "repo": "Janiyamt/PR-AGENT",
+      "merge_commit_sha": "71f19dca2b81e600715870760d260bde6c012a94",
+      "merged_at": "2026-03-03 11:21:44",
+      "merged_by": "likiita",
+      "pr_number": 4,
+      "pr_title": "Update .gitignore",
+      "pr_author": "likiita",
+      "pr_body": "No description",
+      "pr_url": "https://github.com/Janiyamt/PR-AGENT/pull/4",
+      "source_branch": "bot_test",
+      "target_branch": "master",
+      "labels": [],
+      "created_at": "2026-03-03",
+      "additions": 1,
+      "deletions": 1,
+      "files_changed": [
+        ".gitignore"
+      ],
+      "file_diffs": [
+        {
+          "filename": ".gitignore",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "patch": "@@ -4,4 +4,4 @@ pr_report.docx\n venv/\n .venv/\n config.py\n-#tHIS IS THE SECOND COMMENT MADE TO EXPLAIN AND UNDERSTAND THE BOT AS THE 1ST ONE FAILED\n+# this is the last comment to check the bot with all oci services"
+        }
+      ],
+      "commit_count": 1,
+      "commit_messages": [
+        "Update .gitignore"
+      ],
+      "approvals": [],
+      "changes_requested_by": [],
+      "comments": 0,
+      "review_comments": 0,
+      "linked_issues": [],
+      "ai_analysis": {
+        "pr_summary": "No description",
+        "key_impacts": [
+          "Changed 1 file(s)"
+        ],
+        "review_notes": "Approved by: No approvals recorded.",
+        "before_after": "AI analysis unavailable — check OCI credentials in GitHub Secrets."
+      }
+    },
+    {
+      "schema_version": "2.0",
+      "logged_at": "2026-03-03T11:02:13Z",
+      "repo": "Janiyamt/PR-AGENT",
+      "merge_commit_sha": "7a801a4e47af316137118504759fdb8c167f08e6",
+      "merged_at": "2026-03-03 11:01:59",
+      "merged_by": "likiita",
+      "pr_number": 3,
+      "pr_title": "Update .gitignore",
+      "pr_author": "likiita",
+      "pr_body": "No description",
+      "pr_url": "https://github.com/Janiyamt/PR-AGENT/pull/3",
+      "source_branch": "bot_test",
+      "target_branch": "master",
+      "labels": [],
+      "created_at": "2026-03-03",
+      "additions": 2,
+      "deletions": 1,
+      "files_changed": [
+        ".gitignore"
+      ],
+      "file_diffs": [
+        {
+          "filename": ".gitignore",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1,
+          "patch": "@@ -3,4 +3,5 @@ __pycache__/\n pr_report.docx\n venv/\n .venv/\n-config.py\n\\ No newline at end of file\n+config.py\n+#tHIS IS THE SECOND COMMENT MADE TO EXPLAIN AND UNDERSTAND THE BOT AS THE 1ST ONE FAILED"
+        }
+      ],
+      "commit_count": 1,
+      "commit_messages": [
+        "Update .gitignore"
+      ],
+      "approvals": [],
+      "changes_requested_by": [],
+      "comments": 0,
+      "review_comments": 0,
+      "linked_issues": [],
+      "ai_analysis": {
+        "pr_summary": "No description",
+        "key_impacts": [
+          "Changed 1 file(s)"
+        ],
+        "review_notes": "Approved by: No approvals recorded.",
+        "before_after": "AI analysis unavailable — check OCI credentials in GitHub Secrets."
+      }
+    },
+    {
+      "schema_version": "2.0",
+      "logged_at": "2026-03-03T10:34:32Z",
+      "repo": "Janiyamt/PR-AGENT",
+      "merge_commit_sha": "7767cf89b3c149f77ef8f2da030011463d1c1670",
+      "merged_at": "2026-03-03 10:34:04",
+      "merged_by": "likiita",
+      "pr_number": 2,
+      "pr_title": "Add comment to check v2 bot functionality",
+      "pr_author": "likiita",
+      "pr_body": "Added a comment to test the v2 bot functionality.",
+      "pr_url": "https://github.com/Janiyamt/PR-AGENT/pull/2",
+      "source_branch": "bot_test",
+      "target_branch": "master",
+      "labels": [],
+      "created_at": "2026-03-03",
+      "additions": 3,
+      "deletions": 2,
+      "files_changed": [
+        ".github/workflows/merge_agent.yml",
+        "app.py"
+      ],
+      "file_diffs": [
+        {
+          "filename": ".github/workflows/merge_agent.yml",
+          "status": "modified",
+          "additions": 1,
+          "deletions": 1,
+          "patch": "@@ -8,7 +8,7 @@ name: PR Merge Agent\n on:\n   push:\n     branches:\n-      - main   # fires on every push to main, including PR merges\n+      - master   # fires on every push to main, including PR merges\n \n jobs:\n   merge-agent:"
+        },
+        {
+          "filename": "app.py",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1,
+          "patch": "@@ -13,6 +13,7 @@\n import oci_client\n \n # ── Page config — must be the very first Streamlit call ──\n+# This comment is added to check if the v2 bot is working\n st.set_page_config(\n     page_title=\"PR Agent\",\n     page_icon=\"🤖\",\n@@ -312,4 +313,4 @@ def answer_question(question, pr_data, analysis):\n else:\n     # Nothing fetched yet — show instructions\n     st.info(\"👈Enter a GitHub repo in the sidebar and click **Generate Report** to get started.\")\n-   \n\\ No newline at end of file\n+   "
+        }
+      ],
+      "commit_count": 2,
+      "commit_messages": [
+        "Add comment to check v2 bot functionality",
+        "Change trigger branch from 'main' to 'master'"
+      ],
+      "approvals": [],
+      "changes_requested_by": [],
+      "comments": 0,
+      "review_comments": 0,
+      "linked_issues": [],
+      "ai_analysis": {
+        "pr_summary": "Added a comment to test the v2 bot functionality.",
+        "key_impacts": [
+          "Changed 2 file(s)"
+        ],
+        "review_notes": "Approved by: No approvals recorded.",
+        "before_after": "AI analysis unavailable — check OCI credentials in GitHub Secrets."
+      }
+    },
+    {
+      "schema_version": "2.0",
+      "logged_at": "2026-03-04T06:06:24Z",
+      "repo": "Janiyamt/PR-AGENT",
+      "merge_commit_sha": "e052d7586c3bb1e24af4d01315e4d58ce7f8c72e",
+      "merged_at": "2026-03-04 06:05:46",
+      "merged_by": "likiita",
+      "pr_number": 8,
+      "pr_title": "Update comment in .gitignore for clarity",
+      "pr_author": "likiita",
+      "pr_body": "now it installs the oci and can use oci services",
+      "pr_url": "https://github.com/Janiyamt/PR-AGENT/pull/8",
+      "source_branch": "bot_test",
+      "target_branch": "master",
+      "labels": [],
+      "created_at": "2026-03-04",
+      "additions": 2,
+      "deletions": 1,
+      "files_changed": [
+        ".gitignore"
+      ],
+      "file_diffs": [
+        {
+          "filename": ".gitignore",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 1,
+          "patch": "@@ -4,4 +4,5 @@ pr_report.docx\n venv/\n .venv/\n config.py\n-# everything works well with oci services as it will be insatlled now\n+#everything works well with oci services as it is installed now\n+# "
+        }
+      ],
+      "commit_count": 2,
+      "commit_messages": [
+        "Update comment in .gitignore for clarity",
+        "Merge branch 'master' into bot_test"
+      ],
+      "approvals": [],
+      "changes_requested_by": [],
+      "comments": 0,
+      "review_comments": 0,
+      "linked_issues": [],
+      "ai_analysis": {
+        "pr_summary": "This pull request updated a comment in the .gitignore file to correct a grammatical error, changing 'insatlled' to 'installed' for better clarity. The change ensures the documentation accurately reflects that OCI services are now installed and functional. It also included a merge commit from the master branch into the test branch.",
+        "key_impacts": [
+          "No functional impact as it only modifies a comment in .gitignore, not affecting code or build processes.",
+          "Minimal risk since .gitignore comments are non-executable and do not introduce edge cases.",
+          "No performance or security implications from a simple text correction."
+        ],
+        "review_notes": "The PR was authored and merged by the same individual without any external approvals or requested changes, indicating a straightforward internal update. No labels were applied, suggesting it was a minor, non-controversial edit.",
+        "before_after": "Before the merge, the comment contained a spelling error ('insatlled'), potentially causing minor confusion for developers reviewing the file. After the merge, the comment is grammatically correct ('installed'), improving readability and clarity without altering any ignored file patterns or project behavior."
+      }
+    }
+  ]
+}

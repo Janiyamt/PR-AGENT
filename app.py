@@ -13,6 +13,7 @@ import github_client
 import oci_client
 
 # ── Page config — must be the very first Streamlit call ──
+# This comment is added to check if the v2 bot is working
 st.set_page_config(
     page_title="PR Agent",
     page_icon="🤖",
@@ -41,6 +42,7 @@ if "chat_history" not in st.session_state:
 
 # ─────────────────────────────────────────────
 # HELPER — Q&A using OCI Gen AI
+# THIS CHANGES ARE MADE TO CHECK THE OCI SERVICES in detail using a bot
 # ─────────────────────────────────────────────
 
 def answer_question(question, pr_data, analysis):
