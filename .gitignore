@@ -4,4 +4,4 @@ pr_report.docx
 venv/
 .venv/
 config.py
-# i hope everything works well with oci services
+#everything works well with oci services as it is installed now
