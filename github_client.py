@@ -176,6 +176,7 @@ def extract_pr_info(pr_detail, files, reviews,issues=None):
         "linked_issues": issues or [],
         "file_diffs": [
     {
+        
         "filename": f.get("filename"),
         "status": f.get("status"),
         "additions": f.get("additions", 0),
