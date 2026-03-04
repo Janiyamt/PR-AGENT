@@ -68,8 +68,15 @@ def generate(all_events: list, repo: str, output_path: str = _OUTPUT_FILE) -> No
     _add_paragraph(doc, "Merge Event Details", size=16, bold=True,
                    color=PRIMARY, space_before=14, space_after=8)
 
+    print(f"  Generating doc with {len(all_events)} events...")
+    for e in all_events:
+        print(f"     - PR #{e.get('pr_number')} {e.get('pr_title', '')}")
+
     for i, event in enumerate(all_events):
-        _build_merge_card(doc, event)
+        try:
+            _build_merge_card(doc, event)
+        except Exception as e:
+            print(f"  Skipped PR #{event.get('pr_number')} due to error: {e}")
         if i < len(all_events) - 1:
             _add_divider(doc)
 
