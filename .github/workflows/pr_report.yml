@@ -48,10 +48,12 @@ jobs:
       - name: Create config.py
         run: |
           cat > config.py << 'EOF'
-          OCI_COMPARTMENT_ID = "${{ secrets.OCI_COMPARTMENT_ID }}"
-          OCI_ENDPOINT       = "${{ secrets.OCI_ENDPOINT }}"
-          OCI_MODEL_ID       = "${{ secrets.OCI_MODEL_ID }}"
-          OUTPUT_FILE        = "pr_report.docx"
+          OCI_COMPARTMENT_ID  = "${{ secrets.OCI_COMPARTMENT_ID }}"
+          OCI_ENDPOINT        = "${{ secrets.OCI_ENDPOINT }}"
+          OCI_MODEL_ID        = "${{ secrets.OCI_MODEL_ID }}"
+          OCI_CONFIG_FILE     = "/root/.oci/config"
+          OCI_CONFIG_PROFILE  = "DEFAULT"
+          OUTPUT_FILE         = "pr_report.docx"
           EOF
 
       # Step 6: Run the agent
