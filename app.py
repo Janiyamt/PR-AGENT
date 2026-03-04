@@ -42,6 +42,7 @@ if "chat_history" not in st.session_state:
 
 # ─────────────────────────────────────────────
 # HELPER — Q&A using OCI Gen AI
+# THIS CHANGES ARE MADE TO CHECK THE OCI SERVICES
 # ─────────────────────────────────────────────
 
 def answer_question(question, pr_data, analysis):
