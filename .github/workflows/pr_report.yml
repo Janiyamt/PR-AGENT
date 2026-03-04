@@ -91,4 +91,4 @@ jobs:
           git config user.email "pr-agent@github-actions"
           git add -f pr_report.docx
           git diff --staged --quiet || git commit -m "📄 Auto-update PR report [$(date +'%Y-%m-%d %H:%M')]"
-          git push origin master
+          git push origin HEAD:master
