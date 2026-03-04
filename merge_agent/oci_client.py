@@ -1,8 +1,9 @@
 # merge_agent/oci_client.py
+# All config values arrive via os.environ
+# main.py is responsible for loading config.py and injecting values into env
+
 import os
 import json
-
-import config
 
 
 def analyze_merge_event(metadata: dict) -> dict:
@@ -24,9 +25,10 @@ def _build_client():
     from oci.generative_ai_inference import GenerativeAiInferenceClient
 
     key_content = os.environ.get("OCI_KEY_CONTENT", "").strip()
+    endpoint    = os.environ.get("OCI_ENDPOINT", "")
 
     if key_content:
-        # GitHub Actions — use env vars
+        # GitHub Actions — credentials from secrets
         oci_cfg = {
             "user":        os.environ["OCI_USER"],
             "fingerprint": os.environ["OCI_FINGERPRINT"],
@@ -34,23 +36,24 @@ def _build_client():
             "region":      os.environ["OCI_REGION"],
             "key_content": key_content,
         }
-        endpoint = os.environ.get("OCI_ENDPOINT") or config.OCI_ENDPOINT
     else:
-        # Local — use ~/.oci/config via config.py
+        # Local — read from ~/.oci/config file directly
         print("  OCI_KEY_CONTENT not set - using ~/.oci/config (local mode)")
-        oci_cfg  = oci.config.from_file(
-            file_location=config.OCI_CONFIG_FILE,
-            profile_name=config.OCI_CONFIG_PROFILE
-        )
-        endpoint = config.OCI_ENDPOINT
+        oci_cfg  = oci.config.from_file("~/.oci/config", "DEFAULT")
 
     oci.config.validate_config(oci_cfg)
-    return GenerativeAiInferenceClient(config=oci_cfg, service_endpoint=endpoint)
+    return GenerativeAiInferenceClient(
+        config=oci_cfg,
+        service_endpoint=endpoint,
+    )
 
 
 def _build_prompt(m: dict) -> str:
     files_summary   = ", ".join(m.get("files_changed", [])[:8]) or "N/A"
-    commits_summary = "\n".join(f"  - {msg}" for msg in m.get("commit_messages", [])[:5]) or "  (none)"
+    commits_summary = "\n".join(
+        f"  - {msg}" for msg in m.get("commit_messages", [])[:5]
+    ) or "  (none)"
+
     diff_text = ""
     for d in m.get("file_diffs", [])[:4]:
         patch = (d.get("patch") or "")[:600]
@@ -72,7 +75,7 @@ Commits ({m.get('commit_count', 0)} total):
 {commits_summary}
 
 Files changed ({len(m.get('files_changed', []))} files): {files_summary}
-Code delta: +{m.get('additions', 0)} additions / -{m.get('deletions', 0)} deletions
+Code delta: +{m.get('additions', 0)} / -{m.get('deletions', 0)} lines
 
 Approvals from: {', '.join(m.get('approvals', [])) or 'None'}
 Changes requested by: {', '.join(m.get('changes_requested_by', [])) or 'None'}
@@ -92,15 +95,22 @@ Respond ONLY with valid JSON - no markdown fences, no preamble:
 
 def _call_api(client, prompt: str) -> str:
     from oci.generative_ai_inference.models import (
-        ChatDetails, GenericChatRequest, UserMessage, TextContent, OnDemandServingMode,
+        ChatDetails, GenericChatRequest,
+        UserMessage, TextContent, OnDemandServingMode,
     )
-    model_id       = os.environ.get("OCI_MODEL_ID")       or config.OCI_MODEL_ID
-    compartment_id = os.environ.get("OCI_COMPARTMENT_ID") or config.OCI_COMPARTMENT_ID
+    model_id       = os.environ.get("OCI_MODEL_ID", "")
+    compartment_id = os.environ.get("OCI_COMPARTMENT_ID", "")
 
     message      = UserMessage(content=[TextContent(text=prompt)])
     serving_mode = OnDemandServingMode(model_id=model_id)
-    chat_request = GenericChatRequest(messages=[message], max_tokens=800, temperature=0.3, is_stream=False)
-    chat_details = ChatDetails(compartment_id=compartment_id, serving_mode=serving_mode, chat_request=chat_request)
+    chat_request = GenericChatRequest(
+        messages=[message], max_tokens=800, temperature=0.3, is_stream=False
+    )
+    chat_details = ChatDetails(
+        compartment_id=compartment_id,
+        serving_mode=serving_mode,
+        chat_request=chat_request,
+    )
     response = client.chat(chat_details)
     return response.data.chat_response.choices[0].message.content[0].text
 

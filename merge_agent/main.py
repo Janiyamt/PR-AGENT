@@ -2,17 +2,22 @@
 import sys
 import os
 
-# Add repo root to path BEFORE any other imports
-# This ensures config.py is found whether running locally or in GitHub Actions
-repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if repo_root not in sys.path:
-    sys.path.insert(0, repo_root)
+# ── Set up paths and config FIRST before any other imports ──────────────────
+repo_root   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+agent_dir   = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, repo_root)   # so config.py is findable
+sys.path.insert(0, agent_dir)   # so event_parser, oci_client etc are findable
 
-# Now import modules individually (NOT as a package)
-# Importing as "from merge_agent import ..." causes oci_client.py to load
-# before our path fix is in place — importing directly avoids this
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# ── Load config and inject values into env vars if not already set ───────────
+# This bridges config.py (local) and GitHub Secrets (Actions) in one place.
+# Every module just reads os.environ — no module ever imports config directly.
+import config
 
+os.environ.setdefault("OCI_ENDPOINT",       config.OCI_ENDPOINT)
+os.environ.setdefault("OCI_MODEL_ID",       config.OCI_MODEL_ID)
+os.environ.setdefault("OCI_COMPARTMENT_ID", config.OCI_COMPARTMENT_ID)
+
+# ── Now safe to import agent modules ────────────────────────────────────────
 import event_parser
 import github_client
 import oci_client
@@ -30,10 +35,10 @@ def main():
     event = event_parser.parse()
 
     if not event["is_pr_merge"]:
-        print("Push is not a PR merge — nothing to log. Exiting cleanly.")
+        print("Push is not a PR merge - nothing to log. Exiting cleanly.")
         sys.exit(0)
 
-    print(f"PR merge detected: PR #{event['pr_number']} — {event['pr_title']}")
+    print(f"PR merge detected: PR #{event['pr_number']} - {event['pr_title']}")
 
     print("\n[2/5] Fetching PR metadata from GitHub API...")
     metadata = github_client.fetch_merge_metadata(
