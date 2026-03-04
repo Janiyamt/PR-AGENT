@@ -2,20 +2,26 @@
 import sys
 import os
 
-# ── Set up paths and config FIRST before any other imports ──────────────────
-repo_root   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-agent_dir   = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, repo_root)   # so config.py is findable
-sys.path.insert(0, agent_dir)   # so event_parser, oci_client etc are findable
+# ── Hardcoded config values (same as config.py) ─────────────────────────────
+# V2 does not import config.py — values are set here directly as fallbacks.
+# GitHub Actions secrets override these via os.environ (set in the workflow).
+# To change OCI settings, update these values AND your GitHub Secrets.
 
-# ── Load config and inject values into env vars if not already set ───────────
-# This bridges config.py (local) and GitHub Secrets (Actions) in one place.
-# Every module just reads os.environ — no module ever imports config directly.
-import config
+os.environ.setdefault("OCI_ENDPOINT",
+    "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com")
+os.environ.setdefault("OCI_MODEL_ID",
+    "xai.grok-4-fast-non-reasoning")
+os.environ.setdefault("OCI_COMPARTMENT_ID",
+    "ocid1.tenancy.oc1..aaaaaaaahqvb2kliqi35z57qalhpr4dyqbjprclszdcoar2wgc7q6nl36aba")   # <- paste your actual compartment OCID here
 
-os.environ.setdefault("OCI_ENDPOINT",       config.OCI_ENDPOINT)
-os.environ.setdefault("OCI_MODEL_ID",       config.OCI_MODEL_ID)
-os.environ.setdefault("OCI_COMPARTMENT_ID", config.OCI_COMPARTMENT_ID)
+# ── Add merge_agent/ folder to path so sibling modules are importable ────────
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+import event_parser
+import github_client
+import oci_client
+import log_store
+import doc_generator
 
 # ── Now safe to import agent modules ────────────────────────────────────────
 import event_parser
