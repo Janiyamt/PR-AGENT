@@ -41,7 +41,7 @@ def get_user_inputs():
 def main():
     repo, token, author, state, max_prs = get_user_inputs()
 
-    print(f" Fetching {max_prs} {state} PRs from {repo}")
+    print(f"🚀 Fetching {max_prs} {state} PRs from {repo}")
     if author:
         print(f"   Filtered to: {author}")
     print()
@@ -58,17 +58,11 @@ def main():
     # Step 2: OCI Gen AI
     analysis = oci_client.analyze_pull_requests(pr_data)
 
-    # Step 3: Word doc
+    # Step 3: Word report
     output_path = os.path.join(os.path.dirname(__file__), config.OUTPUT_FILE)
     doc_generator.generate(pr_data, analysis, repo, output_path)
 
-    pdf_path = output_path.replace(".docx", ".pdf")
-    print(f"\n🎉 Done! Generated both Word and PDF reports.")
-
-    # Open both files automatically
-    #os.startfile(output_path)                    # opens Word doc
-    if os.path.exists(pdf_path):
-        os.startfile(pdf_path)                   # opens PDF
+    print(f"\n🎉 Done! Report saved: {output_path}")
 
 
 if __name__ == "__main__":

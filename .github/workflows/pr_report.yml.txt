@@ -1,0 +1,89 @@
+# .github/workflows/pr_report.yml
+# =================================
+# Automatically runs whenever a PR is opened or closed.
+# Generates a Word report and commits it back to the repo.
+
+name: Generate PR Report
+
+on:
+  pull_request:
+    types: [opened, closed]
+
+permissions:
+  contents: write
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repo code
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: pip install requests oci python-docx
+
+      # Step 4: Create OCI config file from GitHub Secrets
+      - name: Create OCI config
+        run: |
+          mkdir -p ~/.oci
+          echo "[DEFAULT]" > ~/.oci/config
+          echo "user=${{ secrets.OCI_USER }}" >> ~/.oci/config
+          echo "fingerprint=${{ secrets.OCI_FINGERPRINT }}" >> ~/.oci/config
+          echo "tenancy=${{ secrets.OCI_TENANCY }}" >> ~/.oci/config
+          echo "region=${{ secrets.OCI_REGION }}" >> ~/.oci/config
+          echo "key_file=~/.oci/oci_api_key.pem" >> ~/.oci/config
+          echo "${{ secrets.OCI_KEY_CONTENT }}" > ~/.oci/oci_api_key.pem
+          chmod 600 ~/.oci/oci_api_key.pem
+
+      # Step 5: Create config.py from GitHub Secrets
+      - name: Create config.py
+        run: |
+          cat > config.py << 'EOF'
+          OCI_COMPARTMENT_ID = "${{ secrets.OCI_COMPARTMENT_ID }}"
+          OCI_ENDPOINT       = "${{ secrets.OCI_ENDPOINT }}"
+          OCI_MODEL_ID       = "${{ secrets.OCI_MODEL_ID }}"
+          OUTPUT_FILE        = "pr_report.docx"
+          EOF
+
+      # Step 6: Run the agent
+      - name: Run PR Agent
+        run: |
+          python - << 'EOF'
+          import github_client
+          import oci_client
+          import doc_generator
+
+          repo  = "${{ github.repository }}"
+          token = "${{ secrets.GITHUB_TOKEN }}"
+
+          print(f"Fetching PRs from {repo}...")
+          pr_data = github_client.get_all_pr_data(
+              repo=repo, state="all", max_count=10, token=token
+          )
+
+          if not pr_data:
+              print("No PRs found.")
+              exit(0)
+
+          analysis = oci_client.analyze_pull_requests(pr_data)
+          doc_generator.generate(pr_data, analysis, repo, "pr_report.docx")
+          print("Done!")
+          EOF
+
+      # Step 7: Commit the report back to the repo
+      - name: Commit report to repo
+        run: |
+          git config user.name  "PR Agent Bot"
+          git config user.email "pr-agent@github-actions"
+          git add pr_report.docx
+          git diff --staged --quiet || git commit -m "📄 Auto-update PR report [$(date +'%Y-%m-%d %H:%M')]"
+          git push

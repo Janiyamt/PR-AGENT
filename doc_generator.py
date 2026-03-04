@@ -10,7 +10,6 @@ from docx.shared import Pt, RGBColor, Inches, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
-from docx2pdf import convert
 from docx.oxml import OxmlElement
 from collections import Counter
 import os
@@ -78,7 +77,7 @@ def _add_paragraph(doc, text, size=11, bold=False, italic=False,
 
 
 def _add_left_bar_paragraph(doc, text, bar_color="3B82F6", bg_color="EFF6FF"):
-    """Add a paragraph with a coloured left border — used for AI analysis and summaries."""
+    """Add a paragraph with a coloured left border."""
     p = doc.add_paragraph()
     p.paragraph_format.space_before = Pt(4)
     p.paragraph_format.space_after = Pt(12)
@@ -180,33 +179,26 @@ def _build_overview(doc, prs):
 
 
 def _build_label_breakdown(doc, prs):
-    """
-    Label breakdown section — shows count of each label across all PRs.
-    Helps manager see at a glance how many bugs, enhancements, etc. were worked on.
-    Only shown if at least one PR has a label.
-    """
-    # Flatten all labels from all PRs into one list
+    """Label breakdown — colour-coded count per label. Skipped if no labels."""
     all_labels = [label for pr in prs for label in pr.get("labels", [])]
-
     if not all_labels:
-        return  # Skip section entirely if no labels exist
+        return
 
-    label_counts = Counter(all_labels)  # e.g. {"bug": 3, "enhancement": 2}
+    label_counts = Counter(all_labels)
 
     _add_paragraph(doc, "Labels Breakdown", size=16, bold=True,
                    color=PRIMARY, space_before=12, space_after=8)
 
-    # Colour mapping for known GitHub labels
     label_colors = {
-        "bug":              ("FEE2E2", "DC2626"),   # red
-        "enhancement":      ("DCFCE7", "059669"),   # green
-        "documentation":    ("DBEAFE", "2563EB"),   # blue
-        "duplicate":        ("FEF9C3", "D97706"),   # yellow
-        "help wanted":      ("FFE4E6", "E11D48"),   # pink
-        "good first issue": ("F3E8FF", "7C3AED"),   # purple
-        "invalid":          ("F3F4F6", "6B7280"),   # gray
-        "question":         ("E0F2FE", "0284C7"),   # light blue
-        "wontfix":          ("F9FAFB", "374151"),   # light gray
+        "bug":              ("FEE2E2", "DC2626"),
+        "enhancement":      ("DCFCE7", "059669"),
+        "documentation":    ("DBEAFE", "2563EB"),
+        "duplicate":        ("FEF9C3", "D97706"),
+        "help wanted":      ("FFE4E6", "E11D48"),
+        "good first issue": ("F3E8FF", "7C3AED"),
+        "invalid":          ("F3F4F6", "6B7280"),
+        "question":         ("E0F2FE", "0284C7"),
+        "wontfix":          ("F9FAFB", "374151"),
     }
 
     table = doc.add_table(rows=2, cols=len(label_counts))
@@ -216,7 +208,6 @@ def _build_label_breakdown(doc, prs):
         bg, text_color = label_colors.get(label.lower(), ("F3F4F6", "374151"))
         r, g, b = int(text_color[0:2], 16), int(text_color[2:4], 16), int(text_color[4:6], 16)
 
-        # Row 0 — count number
         count_cell = table.cell(0, col_idx)
         _set_cell_bg(count_cell, bg)
         _set_cell_border(count_cell)
@@ -226,7 +217,6 @@ def _build_label_breakdown(doc, prs):
         count_run.font.size = Pt(18)
         count_run.font.color.rgb = RGBColor(r, g, b)
 
-        # Row 1 — label name
         label_cell = table.cell(1, col_idx)
         _set_cell_bg(label_cell, bg)
         _set_cell_border(label_cell)
@@ -250,7 +240,7 @@ def _build_ai_analysis(doc, overall_analysis):
 def _build_pr_card(doc, pr):
     """
     Detail card for a single PR.
-    Includes: info table, AI summary, description,
+    Includes: heading, AI summary, info table, description,
               linked issues, and code diffs.
     """
     # ── PR heading ──
@@ -271,7 +261,7 @@ def _build_pr_card(doc, pr):
         _add_left_bar_paragraph(doc, f"💡 {pr['ai_summary']}",
                                 bar_color="10B981", bg_color="ECFDF5")
 
-    # ── Info table (2 columns: label | value) ──
+    # ── Info table ──
     rows = [
         ("Author",            pr.get("author", "N/A")),
         ("Labels",            ", ".join(pr.get("labels") or []) or "None"),
@@ -318,12 +308,9 @@ def _build_pr_card(doc, pr):
                        color=GRAY, space_after=8)
 
     # ── Linked Issues ──
-    # These are GitHub Issues referenced in the PR with "Fixes #42" or "Closes #123"
-    # This shows what bug/feature request the PR was solving
-    linked_issues = pr.get("linked_issues", [])
     _add_paragraph(doc, "Linked Issues:", size=10, bold=True,
                    color=DARK, space_before=8, space_after=4)
-
+    linked_issues = pr.get("linked_issues", [])
     if linked_issues:
         for issue in linked_issues:
             status = "Closed ✅" if issue["state"] == "closed" else "Still Open 🔴"
@@ -342,34 +329,27 @@ def _build_pr_card(doc, pr):
             size=9, italic=True, color=LIGHT_GRAY, space_after=6)
 
     # ── Code Diffs ──
-    # Shows exactly what lines were added (+) and removed (-) in each file
     file_diffs = pr.get("file_diffs", [])
     if file_diffs:
         _add_paragraph(doc, "Code Changes:", size=10, bold=True,
                        color=DARK, space_before=8, space_after=4)
-
         for diff in file_diffs:
             if not diff.get("patch"):
-                continue  # skip binary files with no patch text
-
-            status = diff.get("status", "modified")
+                continue
             status_label = {
                 "added":    "ADDED",
                 "modified": "MODIFIED",
                 "removed":  "REMOVED",
                 "renamed":  "RENAMED"
-            }.get(status, "CHANGED")
+            }.get(diff.get("status", "modified"), "CHANGED")
 
-            # File name + status line
             _add_paragraph(doc,
                 f"{status_label}: {diff.get('filename')}  "
                 f"(+{diff.get('additions', 0)} / -{diff.get('deletions', 0)})",
                 size=9, bold=True, color=PRIMARY,
                 space_before=6, space_after=2)
-
-            # The actual diff text — lines with + are additions, lines with - are removals
             _add_paragraph(doc,
-                diff.get("patch", "")[:800],  # limit length to avoid huge pages
+                diff.get("patch", "")[:800],
                 size=8, color=GRAY, space_after=4)
 
 
@@ -410,7 +390,7 @@ def generate(pr_data_list, analysis, repo, output_path):
 
     doc = Document()
 
-    # Set page margins (1 inch all around)
+    # Set page margins
     for section in doc.sections:
         section.top_margin    = Inches(1)
         section.bottom_margin = Inches(1)
@@ -420,7 +400,7 @@ def generate(pr_data_list, analysis, repo, output_path):
     # Build each section in order
     _build_title(doc, repo, generated_at)
     _build_overview(doc, pr_data_list)
-    _build_label_breakdown(doc, pr_data_list)   # ← label breakdown after overview
+    _build_label_breakdown(doc, pr_data_list)
     _build_ai_analysis(doc, analysis.get("overall_analysis", "No analysis available."))
 
     _add_paragraph(doc, "Pull Request Details", size=16, bold=True,
@@ -435,12 +415,3 @@ def generate(pr_data_list, analysis, repo, output_path):
 
     doc.save(output_path)
     print(f"✅ Word document saved: {output_path}")
-
-    # Convert to PDF — saves in same folder as the .docx
-    pdf_path = output_path.replace(".docx", ".pdf")
-    try:
-        convert(output_path, pdf_path)
-        print(f"✅ PDF saved: {pdf_path}")
-    except Exception as e:
-        print(f"⚠️ PDF conversion failed: {e}")
-        print("   Make sure Word is installed — docx2pdf needs Word to convert")
